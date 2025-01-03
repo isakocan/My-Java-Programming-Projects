@@ -3,7 +3,7 @@ package clinicReservationSystem;
 import java.io.*;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Calendar;
+import java.util.Date;
 
 public class CRS implements Serializable {
 
@@ -19,12 +19,14 @@ public class CRS implements Serializable {
         this.hospitals = new HashMap<>();
     }
 
-    public boolean makeRandezvous(long patientID, int hospitalID, int sectionID, int diplomaID, Calendar desiredDate) throws IDException {
+    public boolean makeRandezvous(long patientID, int hospitalID, int sectionID, int diplomaID, Date desiredDate) throws IDException {
     	// 1. Veri Yapılarında Gerekli ID Kontrolleri
     	if (!patients.containsKey(patientID)) {
             throw new IDException("Belirtilen hasta ID'si bulunamadı: " + patientID);
         }
 
+    	Patient patient = patients.get(patientID);
+    	
         if (!hospitals.containsKey(hospitalID)) {
             throw new IDException("Belirtilen hastane ID'si bulunamadı: " + hospitalID);
         }
@@ -38,20 +40,17 @@ public class CRS implements Serializable {
 
         Doctor doctor = section.getDoctor(diplomaID);
 
-         if (doctor == null){
-            throw new IDException("Belirtilen doktor diploma ID'si bulunamadı: " + diplomaID);
-         }
-         
-         
-
-        // 2. Randevu Alma İşlemleri
-        Patient patient = patients.get(patientID);
+        if (doctor == null){
+           throw new IDException("Belirtilen doktor diploma ID'si bulunamadı: " + diplomaID);
+        }
+        
         Schedule schedule = doctor.getSchedule();
 
+        // 2. Randevu Alma İşlemleri
         if (schedule.addRendezvous(patient, desiredDate)) {
-            rendezvous.add(new Rendezvous(patient, desiredDate)); // Randevu listesine ekle
+            rendezvous.add(new Rendezvous(patient, desiredDate, doctor)); // Randevu listesine ekle
             return true;
-        } 
+        }
         else
             return false; // Randevu eklenemedi
         

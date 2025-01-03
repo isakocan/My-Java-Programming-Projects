@@ -1,7 +1,7 @@
 package clinicReservationSystem;
 
 import java.io.Serializable;
-import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedList;
 
 public class Schedule implements Serializable {
@@ -10,6 +10,7 @@ public class Schedule implements Serializable {
 	
 	private LinkedList<Rendezvous> sessions;
     private int maxPatientPerDay;
+    private Doctor doctor;
 
     public Schedule(int maxPatientPerDay) {
         this.sessions = new LinkedList<Rendezvous>();
@@ -29,19 +30,18 @@ public class Schedule implements Serializable {
         this.maxPatientPerDay = maxPatientPerDay;
     }
 
-    public boolean addRendezvous(Patient patient, Calendar desiredDate) {
+    public boolean addRendezvous(Patient patient, Date desiredDate) {
 
         int currentRendezvousCount = 0;
          for(Rendezvous rendezvous : sessions){
-             Calendar rendezvousDate = rendezvous.getDateTime();
-             if(rendezvousDate.get(Calendar.YEAR) == desiredDate.get(Calendar.YEAR) &&
-                rendezvousDate.get(Calendar.DAY_OF_YEAR) == desiredDate.get(Calendar.DAY_OF_YEAR)){
+             Date rendezvousDate = rendezvous.getDateTime();
+             if(rendezvousDate.equals(desiredDate)){
                  currentRendezvousCount++;
              }
         }
 
         if (currentRendezvousCount < maxPatientPerDay) {
-            sessions.add(new Rendezvous(patient, desiredDate));
+            sessions.add(new Rendezvous(patient, desiredDate, doctor));
             return true;
         }
         else

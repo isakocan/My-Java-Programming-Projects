@@ -1,24 +1,25 @@
 package clinicReservationSystem;
 
 import java.io.Serializable;
-import java.util.Calendar;
+import java.util.Date;
 
 public class Rendezvous implements Serializable {
     
 	private static final long serialVersionUID = 1L;
-	private Calendar dateTime;
+	private Date dateTime;
     private Patient patient;
+    private Doctor doctor;
 
-    public Rendezvous(Patient patient, Calendar dateTime) {
+    public Rendezvous(Patient patient, Date dateTime, Doctor doctor) {
         this.patient = patient;
         this.dateTime = dateTime;
     }
 
-    public Calendar getDateTime() {
+    public Date getDateTime() {
         return dateTime;
     }
 
-    public void setDateTime(Calendar dateTime) {
+    public void setDateTime(Date dateTime) {
         this.dateTime = dateTime;
     }
 
@@ -29,6 +30,14 @@ public class Rendezvous implements Serializable {
     public void setPatient(Patient patient) {
         this.patient = patient;
     }
+
+	public Doctor getDoctor() {
+		return doctor;
+	}
+
+	public void setDoctor(Doctor doctor) {
+		this.doctor = doctor;
+	}
 
     
 }

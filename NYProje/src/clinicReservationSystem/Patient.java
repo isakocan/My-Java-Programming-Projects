@@ -1,8 +1,7 @@
 package clinicReservationSystem;
 
-import java.io.Serializable;
 
-public class Patient extends Person implements Serializable {
+public class Patient extends Person {
     
 	private static final long serialVersionUID = 1L;
 
