@@ -51,7 +51,7 @@ public class Hospital implements Serializable {
         return null;
     }
 
-    public void addSection(Section section) throws DuplicateInfoException {
+	public void addSection(Section section) throws DuplicateInfoException {
         for (Section sec : sections) {
             if (sec.getId() == section.getId()) {
                 throw new DuplicateInfoException("Bu id'ye sahip bir bölüm zaten mevcut.");
