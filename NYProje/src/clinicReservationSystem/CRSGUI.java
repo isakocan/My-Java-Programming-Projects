@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
 
 public class CRSGUI {
 
@@ -30,15 +31,15 @@ public class CRSGUI {
 	}
 
 	private void loadData(String filePath) {
-        try {
-            crs.loadTablesToDisk(filePath);
-            resultArea.append("Veriler yüklendi.\n");
-        } catch (IOException e) {
-            resultArea.append("Veri yüklenirken bir sorun oluştu. Dosya okuma hatası.\n");
-        } catch (ClassNotFoundException e) {
-            resultArea.append("Hatalı dosya formatı. Lütfen .ser uzantılı bir dosya seçin.\n");
-        }
-    }
+		try {
+			crs.loadTablesToDisk(filePath);
+			resultArea.append("Veriler yüklendi.\n");
+		} catch (IOException e) {
+			resultArea.append("Veri yüklenirken bir sorun oluştu. Dosya okuma hatası.\n");
+		} catch (ClassNotFoundException e) {
+			resultArea.append("Hatalı dosya formatı. Lütfen .ser uzantılı bir dosya seçin.\n");
+		}
+	}
 
 	private void createAndShowGUI() {
 		frame = new JFrame("Klinik Randevu Sistemi");
@@ -553,16 +554,20 @@ public class CRSGUI {
 			Hospital hospital = null;
 			Section section = null;
 
-			for (Hospital h : crs.getHospitals().values()) {
-				for (Section s : h.listSections()) {
+			boolean found = false;
+			Iterator<Hospital> hospitalIterator = crs.getHospitals().values().iterator();
+			while (hospitalIterator.hasNext() && !found) {
+				Hospital h = hospitalIterator.next();
+				Iterator<Section> sectionIterator = h.listSections().iterator();
+				while (sectionIterator.hasNext() && !found) {
+					Section s = sectionIterator.next();
 					if (s.getDoctor(doctor.getDiplomaId()) != null) {
 						hospital = h;
 						section = s;
-						break;
+						found = true;
 					}
+
 				}
-				if (hospital != null)
-					break;
 			}
 
 			sb.append("Randevu tarihi: ").append(formattedDate).append(", hasta adı: ")
