@@ -10,6 +10,6 @@ public class Patient extends Person {
 
 	@Override
 	public String toString() {
-		return "Patient name: " + getName() + ", National Id: " + getNationalId();
+		return "Hasta adı: " + getName() + ", Kimlik no: " + getNationalId();
 	}
 }

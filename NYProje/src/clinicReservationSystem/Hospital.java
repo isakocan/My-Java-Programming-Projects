@@ -62,6 +62,6 @@ public class Hospital implements Serializable {
 
     @Override
     public String toString() {
-        return "Hospital name: " + name + ", id: " + id;
+        return "Hastane adı: " + name + ", id: " + id;
     }
 }

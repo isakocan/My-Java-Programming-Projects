@@ -16,14 +16,15 @@ public class CRS implements Serializable {
 	private HashMap<Integer, Hospital> hospitals;
 
 	public CRS() {
-		this.patients = new HashMap<>();
-		this.rendezvous = new LinkedList<>();
-		this.hospitals = new HashMap<>();
+		this.patients = new HashMap<Long, Patient>();
+		this.rendezvous = new LinkedList<Rendezvous>();
+		this.hospitals = new HashMap<Integer, Hospital>();
 	}
 
 	public static void main(String[] args) {
 		CRS crs = new CRS();
-
+		new CRSGUI(new CRS());
+		
 		// 1. Hasta, Hastane, Bölüm ve Doktor Oluşturma
 
 		// Hastalar
@@ -80,7 +81,7 @@ public class CRS implements Serializable {
 			// Aynı gün için ikinci randevular (limit kontrolü)
 			makeAppointment(crs, 12345678901L, 1, 101, 777, dateFormat.parse("2024-12-10")); // Başarısız olmalı (aynı
 																								// gün) (Ayşe Kaya)
-			makeAppointment(crs, 98765432109L, 2, 201, 888, dateFormat.parse("2024-12-11"));// Başarısız olmalı (aynı
+			makeAppointment(crs, 98765432109L, 2, 201, 888, dateFormat.parse("2024-12-11"));// Başarılı olmalı (aynı
 																							// gün) (Mehmet Demir)
 			makeAppointment(crs, 45678901234L, 1, 301, 999, dateFormat.parse("2024-12-12"));// Başarısız olmalı (aynı
 																							// gün) (Zeynep Yılmaz)
@@ -99,29 +100,12 @@ public class CRS implements Serializable {
 			makeAppointment(crs, 12345678901L, 1, 101, 666, dateFormat.parse("2024-12-13")); // Geçersiz doktor
 		} catch (ParseException e) {
 			System.err.println("Tarih formatı hatası: " + e.getMessage());
-		} catch (IDException e) {
-			System.err.println("IDException: " + e.getMessage());
 		}
 
 		// 3. Bilgileri Yazdırma
 		System.out.println("\n--- Sistemdeki Bilgiler ---");
 		printSystemInfo(crs);
-
-		// 4. Kaydet ve Yükle Testi
-		String filePath = "clinic_data.ser";
-		try {
-			crs.saveTablesToDisk(filePath);
-			System.out.println("\nVeriler kaydedildi.");
-
-			CRS loadedCRS = new CRS();
-			loadedCRS.loadTablesToDisk(filePath);
-			System.out.println("Veriler yüklendi.");
-
-			System.out.println("\n--- Yüklenen Sistemdeki Bilgiler ---");
-			printSystemInfo(loadedCRS);
-		} catch (Exception e) {
-			System.err.println("Kaydetme/Yükleme Hatası: " + e.getMessage());
-		}
+		
 	}
 
 	public boolean makeRandezvous(long patientID, int hospitalID, int sectionID, int diplomaID, Date desiredDate)
@@ -166,6 +150,7 @@ public class CRS implements Serializable {
 			writer.writeObject(this);
 		} catch (IOException e) {
 			System.err.println("Dosyaya yazma hatası: " + e.getMessage());
+			throw new IOException();
 		}
 
 	}
@@ -178,10 +163,11 @@ public class CRS implements Serializable {
 			this.hospitals = loadedCRS.hospitals;
 		} catch (IOException e) {
 			System.err.println("Dosyadan okuma hatası: " + e.getMessage());
+			throw new IOException();
 
 		} catch (ClassNotFoundException e) {
 			System.err.println("Sınıf bulunamadı hatası: " + e.getMessage());
-
+			throw new ClassNotFoundException();
 		}
 
 	}

@@ -61,6 +61,6 @@ public class Section implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Section id: " + id + ", name: " + name;
+		return "Bölüm adı: " + name + ", id: " + id;
 	}
 }

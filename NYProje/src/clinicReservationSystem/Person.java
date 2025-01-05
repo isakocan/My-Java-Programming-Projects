@@ -28,6 +28,6 @@ public class Person implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Name: " + name + ", Id: " + nationalId;
+		return "İsim: " + name + ", Kimlik no: " + nationalId;
 	}
 }

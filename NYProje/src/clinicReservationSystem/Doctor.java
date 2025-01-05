@@ -24,7 +24,7 @@ public class Doctor extends Person {
 
 	@Override
 	public String toString() {
-		return "Doctor name: " + getName() + ", National Id: " + getNationalId() + ", Diploma Id:" + diplomaId;
+		return "Doktor ismi: " + getName() + ", Diploma id: " + diplomaId;
 	}
 
 }
