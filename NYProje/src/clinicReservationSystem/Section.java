@@ -44,19 +44,15 @@ public class Section implements Serializable {
 		return null;
 	}
 
-	public void addDoctor(Doctor doctor) {
-		try {
-			for (Doctor doc : doctors) {
-				if (doc.getDiplomaId() == doctor.getDiplomaId()) {
-					throw new DuplicateInfoException("Bu diploma id'ye sahip bir doktor zaten mevcut.");
-				}
+	public void addDoctor(Doctor doctor) throws DuplicateInfoException{
+		for (Doctor doc : doctors) {
+			if (doc.getDiplomaId() == doctor.getDiplomaId()) {
+				throw new DuplicateInfoException("Bu diploma id'ye sahip bir doktor zaten mevcut.");
 			}
-
-			doctor.getSchedule().setMaxPatientPerDay(maxPatientPerDay);
-			this.doctors.add(doctor);
-		} catch (DuplicateInfoException e) {
-			System.err.println("Doktor eklenemedi: " + e.getMessage());
 		}
+
+		doctor.getSchedule().setMaxPatientPerDay(maxPatientPerDay);
+		this.doctors.add(doctor);
 	}
 
 	@Override

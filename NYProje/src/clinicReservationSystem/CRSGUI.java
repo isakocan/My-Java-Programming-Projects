@@ -27,8 +27,8 @@ public class CRSGUI {
 	private Font labelFont = new Font("Arial", Font.PLAIN, 14);
 	private Font buttonFont = new Font("Arial", Font.BOLD, 14);
 
-	public CRSGUI(CRS crs) {
-		this.crs = crs;
+	public CRSGUI() {
+		this.crs = new CRS();
 		createAndShowGUI();
 	}
 
