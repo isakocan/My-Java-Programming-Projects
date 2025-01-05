@@ -150,7 +150,6 @@ public class CRS implements Serializable {
 			writer.writeObject(this);
 		} catch (IOException e) {
 			System.err.println("Dosyaya yazma hatası: " + e.getMessage());
-			throw new IOException();
 		}
 
 	}
@@ -163,11 +162,10 @@ public class CRS implements Serializable {
 			this.hospitals = loadedCRS.hospitals;
 		} catch (IOException e) {
 			System.err.println("Dosyadan okuma hatası: " + e.getMessage());
-			throw new IOException();
 
 		} catch (ClassNotFoundException e) {
 			System.err.println("Sınıf bulunamadı hatası: " + e.getMessage());
-			throw new ClassNotFoundException();
+
 		}
 
 	}

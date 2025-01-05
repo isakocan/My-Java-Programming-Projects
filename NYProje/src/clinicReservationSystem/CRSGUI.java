@@ -24,10 +24,12 @@ public class CRSGUI {
 	private JPanel buttonPanel;
 	private JScrollPane scrollPane;
 
+	private Font labelFont = new Font("Arial", Font.PLAIN, 14);
+	private Font buttonFont = new Font("Arial", Font.BOLD, 14);
+
 	public CRSGUI(CRS crs) {
 		this.crs = crs;
 		createAndShowGUI();
-
 	}
 
 	private void loadData(String filePath) {
@@ -44,20 +46,25 @@ public class CRSGUI {
 	private void createAndShowGUI() {
 		frame = new JFrame("Klinik Randevu Sistemi");
 		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		frame.setSize(800, 600);
+		frame.setSize(1000, 600);
+		frame.setLocationRelativeTo(null);
 
 		mainPanel = new JPanel(new BorderLayout());
 		resultArea = new JTextArea(10, 50);
+		resultArea.setFont(labelFont);
 		resultArea.setEditable(false);
 		scrollPane = new JScrollPane(resultArea);
 
 		// Dosya Yükleme Bölümü
-		JPanel filePanel = new JPanel();
+		JPanel filePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		JButton loadFileButton = new JButton("Veri Dosyası Yükle");
-
+		loadFileButton.setFont(buttonFont);
+		loadFileButton.setBackground(new Color(0x007BFF));
+		loadFileButton.setForeground(Color.WHITE);
+		loadFileButton.setPreferredSize(new Dimension(150, 30));
 		loadFileButton.addActionListener(e -> {
 			fileChooser = new JFileChooser();
-			fileChooser.setCurrentDirectory(new File(".")); // Uygulama klasörünü varsayılan yap
+			fileChooser.setCurrentDirectory(new File("."));
 			int result = fileChooser.showOpenDialog(frame);
 			if (result == JFileChooser.APPROVE_OPTION) {
 				File selectedFile = fileChooser.getSelectedFile();
@@ -71,7 +78,9 @@ public class CRSGUI {
 		filePanel.add(loadFileButton);
 		mainPanel.add(filePanel, BorderLayout.NORTH);
 
-		buttonPanel = new JPanel(new GridLayout(0, 1, 10, 10));
+		buttonPanel = new JPanel();
+		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+		buttonPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 		// Ana Ekran Butonları
 		JButton addPatientButton = new JButton("Hasta Ekle");
 		JButton addHospitalButton = new JButton("Hastane Ekle");
@@ -80,18 +89,55 @@ public class CRSGUI {
 		JButton makeAppointmentButton = new JButton("Randevu Al");
 		JButton viewSystemButton = new JButton("Sistem Bilgilerini Görüntüle");
 
+		addPatientButton.setFont(buttonFont);
+		addHospitalButton.setFont(buttonFont);
+		addSectionButton.setFont(buttonFont);
+		addDoctorButton.setFont(buttonFont);
+		makeAppointmentButton.setFont(buttonFont);
+		viewSystemButton.setFont(buttonFont);
+		addPatientButton.setBackground(new Color(0x28A745));
+		addHospitalButton.setBackground(new Color(0x28A745));
+		addSectionButton.setBackground(new Color(0x28A745));
+		addDoctorButton.setBackground(new Color(0x28A745));
+		makeAppointmentButton.setBackground(new Color(0x007BFF));
+		viewSystemButton.setBackground(new Color(0x007BFF));
+		addPatientButton.setForeground(Color.WHITE);
+		addHospitalButton.setForeground(Color.WHITE);
+		addSectionButton.setForeground(Color.WHITE);
+		addDoctorButton.setForeground(Color.WHITE);
+		makeAppointmentButton.setForeground(Color.WHITE);
+		viewSystemButton.setForeground(Color.WHITE);
+
+		addPatientButton.setPreferredSize(new Dimension(200, 50));
+		addHospitalButton.setPreferredSize(new Dimension(200, 50));
+		addSectionButton.setPreferredSize(new Dimension(200, 50));
+		addDoctorButton.setPreferredSize(new Dimension(200, 50));
+		makeAppointmentButton.setPreferredSize(new Dimension(200, 50));
+		viewSystemButton.setPreferredSize(new Dimension(200, 50));
+		addPatientButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+		addHospitalButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+		addSectionButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+		addDoctorButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+		makeAppointmentButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+		viewSystemButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
 		addPatientButton.addActionListener(e -> showPatientPanel());
 		addHospitalButton.addActionListener(e -> showHospitalPanel());
 		addSectionButton.addActionListener(e -> showSectionPanel());
 		addDoctorButton.addActionListener(e -> showDoctorPanel());
 		makeAppointmentButton.addActionListener(e -> showAppointmentPanel());
-		viewSystemButton.addActionListener(e -> showSystemInfo());
+		viewSystemButton.addActionListener(e -> showSystemInfoPanel());
 
 		buttonPanel.add(addPatientButton);
+		buttonPanel.add(Box.createVerticalStrut(10));
 		buttonPanel.add(addHospitalButton);
+		buttonPanel.add(Box.createVerticalStrut(10));
 		buttonPanel.add(addSectionButton);
+		buttonPanel.add(Box.createVerticalStrut(10));
 		buttonPanel.add(addDoctorButton);
+		buttonPanel.add(Box.createVerticalStrut(10));
 		buttonPanel.add(makeAppointmentButton);
+		buttonPanel.add(Box.createVerticalStrut(10));
 		buttonPanel.add(viewSystemButton);
 
 		mainPanel.add(buttonPanel, BorderLayout.CENTER);
@@ -112,14 +158,11 @@ public class CRSGUI {
 						File selectedFile = fileChooser.getSelectedFile();
 						filePath = selectedFile.getAbsolutePath();
 					}
-
 					try {
 						crs.saveTablesToDisk(filePath);
 						resultArea.append("Veriler kaydedildi.\n");
-						System.out.println("Veriler kaydedildi.");
 					} catch (IOException ex) {
 						resultArea.append("Veriler kaydedilemedi.\n");
-						System.err.println("Veriler kaydedilemedi: " + ex.getMessage());
 					}
 				}
 				frame.dispose();
@@ -133,9 +176,12 @@ public class CRSGUI {
 
 	private void showMainPanel() {
 		mainPanel.removeAll();
-		JPanel filePanel = new JPanel();
+		JPanel filePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		JButton loadFileButton = new JButton("Veri Dosyası Yükle");
-
+		loadFileButton.setFont(buttonFont);
+		loadFileButton.setBackground(new Color(0x007BFF));
+		loadFileButton.setForeground(Color.WHITE);
+		loadFileButton.setPreferredSize(new Dimension(150, 30));
 		loadFileButton.addActionListener(e -> {
 			fileChooser = new JFileChooser();
 			fileChooser.setCurrentDirectory(new File(".")); // Uygulama klasörünü varsayılan yap
@@ -158,17 +204,24 @@ public class CRSGUI {
 	}
 
 	private void showPatientPanel() {
-		mainPanel.remove(buttonPanel);
-		mainPanel.remove(scrollPane);
-
+		mainPanel.removeAll();
 		JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
+		panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
 		JLabel patientNameLabel = new JLabel("Hasta Adı:");
+		patientNameLabel.setFont(labelFont);
 		JTextField patientNameField = new JTextField(20);
 		JLabel patientIdLabel = new JLabel("Hasta ID:");
+		patientIdLabel.setFont(labelFont);
 		JTextField patientIdField = new JTextField(20);
 		JButton addPatientButton = new JButton("Hasta Ekle");
+		addPatientButton.setFont(buttonFont);
+		addPatientButton.setBackground(new Color(0x28A745));
+		addPatientButton.setForeground(Color.WHITE);
 		JButton backButton = new JButton("Geri");
+		backButton.setFont(buttonFont);
+		backButton.setBackground(new Color(0x007BFF));
+		backButton.setForeground(Color.WHITE);
 
 		addPatientButton.addActionListener(e -> {
 			try {
@@ -182,13 +235,10 @@ public class CRSGUI {
 				showMainPanel();
 			} catch (NumberFormatException ex) {
 				resultArea.append("Hata: Lütfen geçerli bir Hasta ID girin.\n");
-				System.err.println("Hata: Lütfen geçerli bir Hasta ID girin. " + ex.getMessage());
 			} catch (DuplicateInfoException ex) {
 				resultArea.append("Hata: " + ex.getMessage() + "\n");
-				System.err.println("Hata: " + ex.getMessage());
 			} catch (Exception ex) {
 				resultArea.append("Bilinmeyen bir hata oluştu.\n");
-				System.err.println("Bilinmeyen bir hata oluştu." + ex.getMessage());
 			}
 		});
 
@@ -210,7 +260,6 @@ public class CRSGUI {
 		frame.setContentPane(mainPanel);
 		frame.revalidate();
 		frame.repaint();
-
 	}
 
 	private void showHospitalPanel() {
@@ -218,13 +267,21 @@ public class CRSGUI {
 		mainPanel.remove(scrollPane);
 
 		JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
-
+		panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 		JLabel hospitalIdLabel = new JLabel("Hastane ID:");
+		hospitalIdLabel.setFont(labelFont);
 		JTextField hospitalIdField = new JTextField(20);
 		JLabel hospitalNameLabel = new JLabel("Hastane Adı:");
+		hospitalNameLabel.setFont(labelFont);
 		JTextField hospitalNameField = new JTextField(20);
 		JButton addHospitalButton = new JButton("Hastane Ekle");
+		addHospitalButton.setFont(buttonFont);
+		addHospitalButton.setBackground(new Color(0x28A745));
+		addHospitalButton.setForeground(Color.WHITE);
 		JButton backButton = new JButton("Geri");
+		backButton.setFont(buttonFont);
+		backButton.setBackground(new Color(0x007BFF));
+		backButton.setForeground(Color.WHITE);
 
 		addHospitalButton.addActionListener(e -> {
 			try {
@@ -238,13 +295,10 @@ public class CRSGUI {
 				showMainPanel();
 			} catch (NumberFormatException ex) {
 				resultArea.append("Hata: Lütfen geçerli bir Hastane ID girin.\n");
-				System.err.println("Hata: Lütfen geçerli bir Hastane ID girin. " + ex.getMessage());
 			} catch (DuplicateInfoException ex) {
 				resultArea.append("Hata: " + ex.getMessage() + "\n");
-				System.err.println("Hata: " + ex.getMessage());
 			} catch (Exception ex) {
 				resultArea.append("Bilinmeyen bir hata oluştu.\n");
-				System.err.println("Bilinmeyen bir hata oluştu." + ex.getMessage());
 			}
 		});
 		backButton.addActionListener(new ActionListener() {
@@ -253,7 +307,6 @@ public class CRSGUI {
 				showMainPanel();
 			}
 		});
-
 		panel.add(hospitalIdLabel);
 		panel.add(hospitalIdField);
 		panel.add(hospitalNameLabel);
@@ -265,22 +318,35 @@ public class CRSGUI {
 		frame.setContentPane(mainPanel);
 		frame.revalidate();
 		frame.repaint();
+
 	}
 
 	private void showSectionPanel() {
 		mainPanel.remove(buttonPanel);
 		mainPanel.remove(scrollPane);
 		JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
+		panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
 		JLabel hospitalLabel = new JLabel("Hastane Seç:");
+		hospitalLabel.setFont(labelFont);
 		JComboBox<Hospital> hospitalComboBox = new JComboBox<>(crs.getHospitals().values().toArray(new Hospital[0]));
 		JLabel sectionIdLabel = new JLabel("Bölüm ID:");
+		sectionIdLabel.setFont(labelFont);
 		JTextField sectionIdField = new JTextField(20);
 		JLabel sectionNameLabel = new JLabel("Bölüm Adı:");
+		sectionNameLabel.setFont(labelFont);
 		JTextField sectionNameField = new JTextField(20);
 		JLabel sectionMaxPatientPerDayLabel = new JLabel("Bölüm Max Hasta Sayısı:");
+		sectionMaxPatientPerDayLabel.setFont(labelFont);
 		JTextField sectionMaxPatientPerDayField = new JTextField(20);
 		JButton addSectionButton = new JButton("Bölüm Ekle");
+		addSectionButton.setFont(buttonFont);
+		addSectionButton.setBackground(new Color(0x28A745));
+		addSectionButton.setForeground(Color.WHITE);
 		JButton backButton = new JButton("Geri");
+		backButton.setFont(buttonFont);
+		backButton.setBackground(new Color(0x007BFF));
+		backButton.setForeground(Color.WHITE);
 
 		addSectionButton.addActionListener(e -> {
 			try {
@@ -288,7 +354,6 @@ public class CRSGUI {
 				String sectionName = sectionNameField.getText();
 				int maxPatientPerDay = Integer.parseInt(sectionMaxPatientPerDayField.getText());
 				Hospital selectedHospital = (Hospital) hospitalComboBox.getSelectedItem();
-
 				if (selectedHospital != null) {
 					Section section = new Section(sectionId, sectionName, maxPatientPerDay);
 					selectedHospital.addSection(section);
@@ -299,20 +364,15 @@ public class CRSGUI {
 
 				} else {
 					resultArea.append("Hata: Lütfen geçerli bir hastane seçin.\n");
-					System.err.println("Hata: Lütfen geçerli bir hastane seçin.");
 				}
 				showMainPanel();
 			} catch (NumberFormatException ex) {
 				resultArea.append("Hata: Lütfen geçerli bir Bölüm ID veya Hasta Sayısı girin.\n");
-				System.err.println("Hata: Lütfen geçerli bir Bölüm ID veya Hasta Sayısı girin. " + ex.getMessage());
 			} catch (DuplicateInfoException ex) {
 				resultArea.append("Hata: " + ex.getMessage() + "\n");
-				System.err.println("Hata: " + ex.getMessage());
 			} catch (Exception ex) {
 				resultArea.append("Bilinmeyen bir hata oluştu.\n");
-				System.err.println("Bilinmeyen bir hata oluştu." + ex.getMessage());
 			}
-
 		});
 		backButton.addActionListener(new ActionListener() {
 			@Override
@@ -320,6 +380,7 @@ public class CRSGUI {
 				showMainPanel();
 			}
 		});
+
 		panel.add(hospitalLabel);
 		panel.add(hospitalComboBox);
 		panel.add(sectionIdLabel);
@@ -340,19 +401,33 @@ public class CRSGUI {
 	private void showDoctorPanel() {
 		mainPanel.remove(buttonPanel);
 		mainPanel.remove(scrollPane);
+
 		JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
+		panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
 		JLabel hospitalLabel = new JLabel("Hastane Seç:");
+		hospitalLabel.setFont(labelFont);
 		JComboBox<Hospital> hospitalComboBox = new JComboBox<>(crs.getHospitals().values().toArray(new Hospital[0]));
 		JLabel sectionLabel = new JLabel("Bölüm Seç:");
+		sectionLabel.setFont(labelFont);
 		JComboBox<Section> sectionComboBox = new JComboBox<>();
 		JLabel doctorNameLabel = new JLabel("Doktor Adı:");
+		doctorNameLabel.setFont(labelFont);
 		JTextField doctorNameField = new JTextField(20);
 		JLabel doctorNationalIdLabel = new JLabel("Doktor National ID:");
+		doctorNationalIdLabel.setFont(labelFont);
 		JTextField doctorNationalIdField = new JTextField(20);
 		JLabel doctorDiplomaIdLabel = new JLabel("Doktor Diploma ID:");
+		doctorDiplomaIdLabel.setFont(labelFont);
 		JTextField doctorDiplomaIdField = new JTextField(20);
 		JButton addDoctorButton = new JButton("Doktor Ekle");
+		addDoctorButton.setFont(buttonFont);
+		addDoctorButton.setBackground(new Color(0x28A745));
+		addDoctorButton.setForeground(Color.WHITE);
 		JButton backButton = new JButton("Geri");
+		backButton.setFont(buttonFont);
+		backButton.setBackground(new Color(0x007BFF));
+		backButton.setForeground(Color.WHITE);
 
 		hospitalComboBox.addActionListener(new ActionListener() {
 			@Override
@@ -382,18 +457,14 @@ public class CRSGUI {
 					doctorDiplomaIdField.setText("");
 				} else {
 					resultArea.append("Hata: Lütfen geçerli bir hastane ve bölüm seçin.\n");
-					System.err.println("Hata: Lütfen geçerli bir hastane ve bölüm seçin.");
 				}
 				showMainPanel();
 			} catch (NumberFormatException ex) {
 				resultArea.append("Hata: Lütfen geçerli bir doktor id veya diploma id girin.\n");
-				System.err.println("Hata: Lütfen geçerli bir doktor id veya diploma id girin. " + ex.getMessage());
 			} catch (DuplicateInfoException ex) {
 				resultArea.append("Hata: " + ex.getMessage() + "\n");
-				System.err.println("Hata: " + ex.getMessage());
 			} catch (Exception ex) {
 				resultArea.append("Bilinmeyen bir hata oluştu.\n");
-				System.err.println("Bilinmeyen bir hata oluştu." + ex.getMessage());
 			}
 		});
 		backButton.addActionListener(new ActionListener() {
@@ -402,6 +473,7 @@ public class CRSGUI {
 				showMainPanel();
 			}
 		});
+
 		panel.add(hospitalLabel);
 		panel.add(hospitalComboBox);
 		panel.add(sectionLabel);
@@ -425,19 +497,30 @@ public class CRSGUI {
 		mainPanel.remove(buttonPanel);
 		mainPanel.remove(scrollPane);
 		JPanel panel = new JPanel(new GridLayout(0, 2, 10, 10));
-
+		panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 		JLabel patientLabel = new JLabel("Hasta Seç:");
+		patientLabel.setFont(labelFont);
 		JComboBox<Patient> patientComboBox = new JComboBox<>(crs.getPatients().values().toArray(new Patient[0]));
 		JLabel hospitalLabel = new JLabel("Hastane Seç:");
+		hospitalLabel.setFont(labelFont);
 		JComboBox<Hospital> hospitalComboBox = new JComboBox<>(crs.getHospitals().values().toArray(new Hospital[0]));
 		JLabel sectionLabel = new JLabel("Bölüm Seç:");
+		sectionLabel.setFont(labelFont);
 		JComboBox<Section> sectionComboBox = new JComboBox<>();
 		JLabel doctorLabel = new JLabel("Doktor Seç:");
+		doctorLabel.setFont(labelFont);
 		JComboBox<Doctor> doctorComboBox = new JComboBox<>();
 		JLabel desiredDateLabel = new JLabel("Randevu Tarihi (GG-AA-YYYY):");
+		desiredDateLabel.setFont(labelFont);
 		JTextField desiredDateField = new JTextField(20);
 		JButton makeAppointmentButton = new JButton("Randevu Al");
+		makeAppointmentButton.setFont(buttonFont);
+		makeAppointmentButton.setBackground(new Color(0x007BFF));
+		makeAppointmentButton.setForeground(Color.WHITE);
 		JButton backButton = new JButton("Geri");
+		backButton.setFont(buttonFont);
+		backButton.setBackground(new Color(0x007BFF));
+		backButton.setForeground(Color.WHITE);
 
 		hospitalComboBox.addActionListener(new ActionListener() {
 			@Override
@@ -452,6 +535,7 @@ public class CRSGUI {
 				}
 			}
 		});
+
 		sectionComboBox.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -464,6 +548,7 @@ public class CRSGUI {
 				}
 			}
 		});
+
 		makeAppointmentButton.addActionListener(e -> {
 			try {
 				Patient selectedPatient = (Patient) patientComboBox.getSelectedItem();
@@ -483,24 +568,20 @@ public class CRSGUI {
 					else
 						resultArea.append("Randevu oluşturulamadı. Doktor o gün dolu.\n");
 					desiredDateField.setText("");
-
 				} else {
 					resultArea.append("Hata: Lütfen geçerli bir seçim yapınız.\n");
 				}
 				showMainPanel();
 			} catch (NumberFormatException ex) {
 				resultArea.append("Hata: Lütfen sayısal değerleri kontrol edin.\n");
-				System.err.println("Hata: Lütfen sayısal değerleri kontrol edin. " + ex.getMessage());
 			} catch (ParseException ex) {
 				resultArea.append("Hata: Lütfen tarih formatını doğru girin (GG-AA-YYYY).\n");
-				System.err.println("Hata: Lütfen tarih formatını doğru girin (GG-AA-YYYY). " + ex.getMessage());
 			} catch (IDException ex) {
 				resultArea.append("Hata: " + ex.getMessage() + "\n");
-				System.err.println("Hata: " + ex.getMessage());
 			} catch (Exception ex) {
 				resultArea.append("Hata: Bilinmeyen bir hata oluştu.\n");
-				System.err.println("Hata: Bilinmeyen bir hata oluştu." + ex.getMessage());
 			}
+
 		});
 		backButton.addActionListener(new ActionListener() {
 			@Override
@@ -528,20 +609,33 @@ public class CRSGUI {
 		frame.repaint();
 	}
 
-	private void showSystemInfo() {
-		resultArea.setText("");
+	private void showSystemInfoPanel() {
+		mainPanel.remove(buttonPanel);
+		mainPanel.remove(scrollPane);
+		JPanel panel = new JPanel(new BorderLayout());
+		JButton backButton = new JButton("Geri");
+		backButton.setFont(buttonFont);
+		backButton.setBackground(new Color(0x007BFF));
+		backButton.setForeground(Color.WHITE);
+		JTextArea systemInfoTextArea = new JTextArea(20, 70);
+		systemInfoTextArea.setEditable(false);
+		systemInfoTextArea.setFont(labelFont);
+		JScrollPane systemInfoScrollPane = new JScrollPane(systemInfoTextArea);
+
 		StringBuilder sb = new StringBuilder();
+
 		sb.append("\nHastalar:\n");
 		for (Patient p : crs.getPatients().values()) {
-			sb.append(p).append("\n");
+			sb.append("\t").append(p).append("\n");
 		}
+
 		sb.append("\nHastaneler:\n");
 		for (Hospital hospital : crs.getHospitals().values()) {
-			sb.append(hospital).append("\n");
+			sb.append("\t").append(hospital).append("\n");
 			for (Section section : hospital.listSections()) {
-				sb.append("\t").append(section).append("\n");
+				sb.append("\t\t").append(section).append("\n");
 				for (Doctor doctor : section.listDoctors()) {
-					sb.append("\t\t").append(doctor).append("\n");
+					sb.append("\t\t\t").append(doctor).append("\n");
 				}
 			}
 		}
@@ -564,19 +658,29 @@ public class CRSGUI {
 					if (s.getDoctor(doctor.getDiplomaId()) != null) {
 						hospital = h;
 						section = s;
-						found = true;
+						break;
 					}
-
 				}
 			}
 
-			sb.append("Randevu tarihi: ").append(formattedDate).append(", hasta adı: ")
+			sb.append("\tRandevu tarihi: ").append(formattedDate).append(", hasta adı: ")
 					.append(rendezvous.getPatient().getName()).append(", doktor adı: ").append(doctor.getName())
 					.append(", hastane adı: ").append(hospital.getName()).append(", bölüm adı: ")
 					.append(section != null ? section.getName() : "Bölüm bilgisi bulunamadı").append("\n");
 		}
-		resultArea.append(sb.toString());
-		showMainPanel();
-	}
 
+		systemInfoTextArea.setText(sb.toString());
+		backButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				showMainPanel();
+			}
+		});
+		panel.add(systemInfoScrollPane, BorderLayout.CENTER);
+		panel.add(backButton, BorderLayout.SOUTH);
+		mainPanel.add(panel, BorderLayout.CENTER);
+		frame.setContentPane(mainPanel);
+		frame.revalidate();
+		frame.repaint();
+	}
 }
