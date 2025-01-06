@@ -15,7 +15,7 @@ public class CRSTerminal {
 		this.crs = new CRS();
 		run();
 	}
-
+	
 	public void run() {
 		Scanner scanner = new Scanner(System.in);
 		String choice;
@@ -81,7 +81,7 @@ public class CRSTerminal {
 				System.err.println("Hata: Bilinmeyen bir hata oluştu.");
 			} finally {
 				if (!choice.equals("0")) {
-					System.out.println("\n[i]-> Menüye dönmek için bir tuşa basın: ");
+					System.out.println("\n[i]-> Menüye dönmek için enter tuşuna basın: ");
 					choice = scanner.nextLine();
 				}
 			}
@@ -254,9 +254,9 @@ public class CRSTerminal {
 					}
 				}
 			}
-			System.out.println("\tRandevu tarihi: " + formattedDate + ", hasta adı: " + rendezvous.getPatient().getName()
-							+ ", doktor adı: " + doctor.getName() + ", hastane adı: " + hospital.getName()
-							+ ", bölüm adı: " + section.getName());
+			System.out.println("\tRandevu tarihi: " + formattedDate + ", \thasta adı: " + rendezvous.getPatient().getName()
+							+ ", \tdoktor adı: " + doctor.getName() + ", \thastane adı: " + hospital.getName()
+							+ ", \tbölüm adı: " + section.getName());
 		}
 	}
 

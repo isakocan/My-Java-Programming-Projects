@@ -284,6 +284,7 @@ public class CRSGUI {
 		backButton.setForeground(Color.WHITE);
 
 		addHospitalButton.addActionListener(e -> {
+			
 			try {
 				int hospitalId = Integer.parseInt(hospitalIdField.getText());
 				String hospitalName = hospitalNameField.getText();
@@ -663,9 +664,9 @@ public class CRSGUI {
 				}
 			}
 
-			sb.append("\tRandevu tarihi: ").append(formattedDate).append(", hasta adı: ")
-					.append(rendezvous.getPatient().getName()).append(", doktor adı: ").append(doctor.getName())
-					.append(", hastane adı: ").append(hospital.getName()).append(", bölüm adı: ")
+			sb.append("\tRandevu tarihi: ").append(formattedDate).append(",   hasta adı: ")
+					.append(rendezvous.getPatient().getName()).append(",\t doktor adı: ").append(doctor.getName())
+					.append(",\t    hastane adı: ").append(hospital.getName()).append(",\tbölüm adı: ")
 					.append(section != null ? section.getName() : "Bölüm bilgisi bulunamadı").append("\n");
 		}
 

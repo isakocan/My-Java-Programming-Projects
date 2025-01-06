@@ -49,6 +49,9 @@ public class Section implements Serializable {
 			if (doc.getDiplomaId() == doctor.getDiplomaId()) {
 				throw new DuplicateInfoException("Bu diploma id'ye sahip bir doktor zaten mevcut.");
 			}
+			else if(doc.getNationalId() == doctor.getNationalId()) {
+				throw new DuplicateInfoException("Bu kimlik no'ya sahip bir doktor zaten mevcut.");
+			}
 		}
 
 		doctor.getSchedule().setMaxPatientPerDay(maxPatientPerDay);

@@ -19,7 +19,7 @@ public class CRS implements Serializable {
 		this.rendezvous = new LinkedList<Rendezvous>();
 		this.hospitals = new HashMap<Integer, Hospital>();
 	}
-
+	
 	public static void main(String[] args) {
 		Scanner scanner = new Scanner(System.in);
 		String choice;
