@@ -76,9 +76,9 @@ public class CRSTerminal {
 			} catch (IDException e) {
 				System.err.println("Hata:" + e.getMessage());
 			} catch (ClassNotFoundException e) {
-				System.err.println("Sınıf bulunamadı hatası: " + e.getMessage());
+				System.err.println("Hatalı dosya formatı. Lütfen .ser uzantılı bir dosya seçin.");
 			} catch (IOException e) {
-				System.err.println("Dosyadan okuma hatası: " + e.getMessage());
+				System.err.println(e.getMessage());
 			} catch (InterruptedException e) {
 				System.err.println("Hata : Teknik bir hata oluştu.\n");
 			} catch (Exception e) {
@@ -168,7 +168,7 @@ public class CRSTerminal {
 
 	}
 
-	private void makeAppointment(Scanner scanner) throws InterruptedException {
+	public void makeAppointment(Scanner scanner) throws InterruptedException {
 		// THREAD CREATION
 		Thread thread = new Thread(new Runnable() {
 			@Override
@@ -304,7 +304,6 @@ public class CRSTerminal {
 		} else {
 			filePath = filePathInput;
 		}
-
 		crs.saveTablesToDisk(filePath);
 		System.out.println("Veriler kaydedildi.");
 
@@ -318,7 +317,6 @@ public class CRSTerminal {
 		} else {
 			filePath = filePathInput;
 		}
-
 		crs.loadTablesToDisk(filePath);
 		System.out.println("Veriler yüklendi.");
 

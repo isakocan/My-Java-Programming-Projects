@@ -1,7 +1,13 @@
 package testClinicReservationSystem;
 
-import clinicReservationSystem.*;
 import org.junit.Test;
+import clinicReservationSystem.CRS;
+import clinicReservationSystem.Doctor;
+import clinicReservationSystem.DuplicateInfoException;
+import clinicReservationSystem.Hospital;
+import clinicReservationSystem.IDException;
+import clinicReservationSystem.Patient;
+import clinicReservationSystem.Section;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import java.text.ParseException;

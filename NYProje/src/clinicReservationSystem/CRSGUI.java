@@ -31,13 +31,13 @@ public class CRSGUI {
 		this.crs = new CRS();
 		createAndShowGUI();
 	}
-
+	
 	private void loadData(String filePath) {
 		try {
 			crs.loadTablesToDisk(filePath);
 			resultArea.append("Veriler yüklendi.\n");
 		} catch (IOException e) {
-			resultArea.append("Veri yüklenirken bir sorun oluştu. Dosya okuma hatası.\n");
+			resultArea.append(e.getMessage() + "\n");
 		} catch (ClassNotFoundException e) {
 			resultArea.append("Hatalı dosya formatı. Lütfen .ser uzantılı bir dosya seçin.\n");
 		}
@@ -162,7 +162,7 @@ public class CRSGUI {
 						crs.saveTablesToDisk(filePath);
 						resultArea.append("Veriler kaydedildi.\n");
 					} catch (IOException ex) {
-						resultArea.append("Veriler kaydedilemedi.\n");
+						resultArea.append(ex.getMessage() + "\n");
 					}
 				}
 				frame.dispose();

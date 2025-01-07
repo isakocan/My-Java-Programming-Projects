@@ -12,4 +12,8 @@ public class Patient extends Person {
 	public String toString() {
 		return "Hasta adı: " + getName() + ", Kimlik no: " + getNationalId();
 	}
+
+	public long getId() {
+		return 0;
+	}
 }

@@ -1,130 +1,163 @@
 package testClinicReservationSystem;
 
 import clinicReservationSystem.*;
+import org.junit.Before;
 import org.junit.Test;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import static org.junit.Assert.*;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class ThreadTest {
 
-	private SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-	private PrintStream originalOut = System.out;
-	private ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-	private ByteArrayInputStream inContent;
+	private CRSTerminalTest terminal;
+	private CRS crs;
+	private StringBuilder output;
 
-	@Test
-	public void testCRSGUIMakeAppointmentThread() throws InterruptedException, ParseException, DuplicateInfoException {
+	@Before
+	public void setUp() throws Exception {
+		crs = new CRS();
+		output = new StringBuilder();
+		terminal = new CRSTerminalTest(crs, output);
 
-		Patient patient1 = new Patient("Test Patient 1", 123456789);
-		Hospital hospital1 = new Hospital(1, "Test Hospital 1");
-		Section section1 = new Section(101, "Test Section 1", 2);
-		Doctor doctor1 = new Doctor("Test Doctor 1", 11112222333L, 456);
-		section1.addDoctor(doctor1);
-		hospital1.addSection(section1);
-		CRS crs = new CRS();
-		crs.addPatient(patient1);
-		crs.addHospital(hospital1);
-
-		new CRSGUI();
-
-		Thread.sleep(100);
-		String input = "1\n1\n101\n456\n01-01-2024\n";
-		inContent = new ByteArrayInputStream(input.getBytes());
-		System.setIn(inContent);
-		System.setOut(new PrintStream(outContent));
-		new CRSTerminal();
-		Thread.sleep(100);
-		assertTrue(outContent.toString().contains("Randevu başarıyla oluşturuldu."));
-		System.setIn(System.in);
-		System.setOut(originalOut);
+		// Önceden bazı veriler ekleyelim
+		terminal.addPatient("Ahmet", 123);
+		terminal.addHospital(101, "Merkez Hastanesi");
+		terminal.addSection(101, 201, "Kardiyoloji", 5);
+		terminal.addDoctor(101, 201, "Dr. Mehmet", 11122233344L, 301);
+		terminal.addDoctor(101, 201, "Dr. Ayşe", 11122233355L, 302);
 
 	}
 
 	@Test
-	public void testCRSGUIViewSystemThread() throws InterruptedException, ParseException, DuplicateInfoException {
-		Patient patient1 = new Patient("Test Patient 1", 123456789);
-		Hospital hospital1 = new Hospital(1, "Test Hospital 1");
-		Section section1 = new Section(101, "Test Section 1", 2);
-		Doctor doctor1 = new Doctor("Test Doctor 1", 11112222333L, 456);
-		section1.addDoctor(doctor1);
-		hospital1.addSection(section1);
-		CRS crs = new CRS();
-		crs.addPatient(patient1);
-		crs.addHospital(hospital1);
-		Date date = dateFormat.parse("01-01-2024");
-		crs.makeRandezvous(123456789L, 1, 101, 456, date);
+	public void testConcurrentAppointments() throws Exception {
+		ExecutorService executor = Executors.newFixedThreadPool(2); // 2 thread ile test edelim
 
-		new CRSGUI();
-		Thread.sleep(100);
+		// 1. randevu
+		executor.submit(() -> {
+			try {
+				output.append("Thread 1: Randevu almaya çalışıyor...\n");
+				boolean result = terminal.makeAppointment(123, 101, 201, 301, "20-12-2024");
+				output.append("Thread 1: Randevu alma sonucu: " + result + "\n");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		});
 
-		String input = "6\n";
-		inContent = new ByteArrayInputStream(input.getBytes());
-		System.setIn(inContent);
-		System.setOut(new PrintStream(outContent));
-		new CRSTerminal();
-		Thread.sleep(100);
-		assertTrue(outContent.toString().contains("Hastalar:"));
-		assertTrue(outContent.toString().contains("Hastaneler:"));
-		assertTrue(outContent.toString().contains("Randevular:"));
-		System.setIn(System.in);
-		System.setOut(originalOut);
+		// 2. randevu aynı gün
+		executor.submit(() -> {
+			try {
+				output.append("Thread 2: Randevu almaya çalışıyor...\n");
+				boolean result = terminal.makeAppointment(123, 101, 201, 301, "20-12-2024");
+				output.append("Thread 2: Randevu alma sonucu: " + result + "\n");
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		});
+
+		executor.shutdown();
+		executor.awaitTermination(1, TimeUnit.MINUTES);
+
+		// 1 randevu alınmış olması lazım 2. randevu alınamaması lazım aynı gün
+		long appointmentCount = crs.getRendezvous().stream().count();
+		assertEquals(1, appointmentCount);
+
+		assertTrue(output.toString().contains("Thread 1: Randevu alma sonucu: true"));
+		assertTrue(output.toString().contains("Thread 2: Randevu alma sonucu: false")
+				|| output.toString().contains("Thread 2: Randevu alma sonucu: null"));
+
 	}
 
 	@Test
-	public void testCRSTerminalMakeAppointmentThread()
-			throws InterruptedException, ParseException, DuplicateInfoException {
-		Patient patient1 = new Patient("Test Patient 1", 123456789L);
-		Hospital hospital1 = new Hospital(1, "Test Hospital 1");
-		Section section1 = new Section(101, "Test Section 1", 2);
-		Doctor doctor1 = new Doctor("Test Doctor 1", 11112222333L, 456);
-		section1.addDoctor(doctor1);
-		hospital1.addSection(section1);
-		CRS crs = new CRS();
-		crs.addPatient(patient1);
-		crs.addHospital(hospital1);
+	public void testConcurrentAppointments_DifferentDays() throws Exception {
+		ExecutorService executor = Executors.newFixedThreadPool(2); // 2 thread ile test edelim
 
-		String input = "5\n123456789\n1\n101\n456\n01-01-2024\n";
-		inContent = new ByteArrayInputStream(input.getBytes());
-		System.setIn(inContent);
-		System.setOut(new PrintStream(outContent));
-		new CRSTerminal();
+		// 1. randevu
+		executor.submit(() -> {
+			try {
+				output.append("Thread 1: Randevu almaya çalışıyor...\n");
+				boolean result = terminal.makeAppointment(123, 101, 201, 301, "20-12-2024");
+				output.append("Thread 1: Randevu alma sonucu: " + result + "\n");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		});
 
-		Thread.sleep(100);
-		assertTrue(outContent.toString().contains("Randevu başarıyla oluşturuldu."));
-		System.setIn(System.in);
-		System.setOut(originalOut);
+		// 2. randevu aynı doktor farklı gün
+		executor.submit(() -> {
+			try {
+				output.append("Thread 2: Randevu almaya çalışıyor...\n");
+				boolean result = terminal.makeAppointment(123, 101, 201, 301, "21-12-2024");
+				output.append("Thread 2: Randevu alma sonucu: " + result + "\n");
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		});
+
+		executor.shutdown();
+		executor.awaitTermination(1, TimeUnit.MINUTES);
+
+		// İki randevuda alınmış olması lazım çünkü 2 farklı gün
+		long appointmentCount = crs.getRendezvous().stream().count();
+		assertEquals(2, appointmentCount);
+
+		assertTrue(output.toString().contains("Thread 1: Randevu alma sonucu: true"));
+		assertTrue(output.toString().contains("Thread 2: Randevu alma sonucu: true"));
+
 	}
 
 	@Test
-	public void testCRSTerminalPrintSystemInfoThread()
-			throws InterruptedException, ParseException, DuplicateInfoException {
-		Patient patient1 = new Patient("Test Patient 1", 123456789);
-		Hospital hospital1 = new Hospital(1, "Test Hospital 1");
-		Section section1 = new Section(101, "Test Section 1", 2);
-		Doctor doctor1 = new Doctor("Test Doctor 1", 11112222333L, 456);
-		section1.addDoctor(doctor1);
-		hospital1.addSection(section1);
-		CRS crs = new CRS();
-		crs.addPatient(patient1);
-		crs.addHospital(hospital1);
-		Date date = dateFormat.parse("01-01-2024");
-		crs.makeRandezvous(123456789L, 1, 101, 456, date);
+	public void testConcurrentAppointments_DifferentDoctorSameDay() throws Exception {
+		ExecutorService executor = Executors.newFixedThreadPool(2); // 2 thread ile test edelim
 
-		String input = "6\n";
-		inContent = new ByteArrayInputStream(input.getBytes());
-		System.setIn(inContent);
-		System.setOut(new PrintStream(outContent));
-		new CRSTerminal();
-		Thread.sleep(100);
-		assertTrue(outContent.toString().contains("Hastalar:"));
-		assertTrue(outContent.toString().contains("Hastaneler:"));
-		assertTrue(outContent.toString().contains("Randevular:"));
-		System.setIn(System.in);
-		System.setOut(originalOut);
+		// 1. randevu
+		executor.submit(() -> {
+			try {
+				output.append("Thread 1: Randevu almaya çalışıyor...\n");
+				boolean result = terminal.makeAppointment(123, 101, 201, 301, "20-12-2024");
+				output.append("Thread 1: Randevu alma sonucu: " + result + "\n");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		});
+
+		// 2. randevu aynı gün farklı doktor
+		executor.submit(() -> {
+			try {
+				output.append("Thread 2: Randevu almaya çalışıyor...\n");
+				boolean result = terminal.makeAppointment(123, 101, 201, 302, "20-12-2024");
+				output.append("Thread 2: Randevu alma sonucu: " + result + "\n");
+
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		});
+
+		executor.shutdown();
+		executor.awaitTermination(1, TimeUnit.MINUTES);
+
+		// İki randevuda alınmış olması lazım çünkü 2 farklı doktor aynı gün
+		long appointmentCount = crs.getRendezvous().stream().count();
+		assertEquals(2, appointmentCount);
+
+		assertTrue(output.toString().contains("Thread 1: Randevu alma sonucu: true"));
+		assertTrue(output.toString().contains("Thread 2: Randevu alma sonucu: true"));
+
 	}
+
+	@Test
+	public void testPrintSystemInfo() throws Exception {
+		terminal.printSystemInfo();
+		String systemInfo = output.toString();
+		assertNotNull(systemInfo);
+		System.out.print(systemInfo);
+		assertTrue(systemInfo.contains("Hastalar:"));
+		assertTrue(systemInfo.contains("Hastaneler:"));
+		assertTrue(systemInfo.contains("Randevular:"));
+
+	}
+
 }
