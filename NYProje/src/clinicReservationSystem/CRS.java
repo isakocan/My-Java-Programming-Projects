@@ -19,7 +19,7 @@ public class CRS implements Serializable {
 		this.rendezvous = new LinkedList<Rendezvous>();
 		this.hospitals = new HashMap<Integer, Hospital>();
 	}
-	
+
 	public static void main(String[] args) {
 		Scanner scanner = new Scanner(System.in);
 		String choice;
@@ -41,10 +41,9 @@ public class CRS implements Serializable {
 				System.out.println("Lütfen geçerli bir sayı girin.");
 				break;
 			}
-			
+
 		} while (!choice.equals("1") && !choice.equals("2"));
 		scanner.close();
-		
 	}
 
 	public boolean makeRandezvous(long patientID, int hospitalID, int sectionID, int diplomaID, Date desiredDate)
@@ -125,14 +124,4 @@ public class CRS implements Serializable {
 		this.hospitals.put(hospital.getId(), hospital);
 	}
 
-	
-	/*
-	oluşabilecek hatalar
-	aynı id hasta, hastane, bölüm, doktor(diploma ve national) olmicak. 
-	tarih formatı yanlış olabilir
-	yazılar yanlış olabilir. isme sayı cart curt gibi.
-	doktor o gün dolu olayı
-	randevu alırken olmayan id girmek.
-	*/
-	
 }

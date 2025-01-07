@@ -35,6 +35,10 @@ public class Section implements Serializable {
 		return doctors;
 	}
 
+	public int getMaxPatientPerDay() {
+		return maxPatientPerDay;
+	}
+
 	public Doctor getDoctor(int diplomaId) {
 		for (Doctor doctor : doctors) {
 			if (doctor.getDiplomaId() == diplomaId) {
@@ -44,12 +48,11 @@ public class Section implements Serializable {
 		return null;
 	}
 
-	public void addDoctor(Doctor doctor) throws DuplicateInfoException{
+	public void addDoctor(Doctor doctor) throws DuplicateInfoException {
 		for (Doctor doc : doctors) {
 			if (doc.getDiplomaId() == doctor.getDiplomaId()) {
 				throw new DuplicateInfoException("Bu diploma id'ye sahip bir doktor zaten mevcut.");
-			}
-			else if(doc.getNationalId() == doctor.getNationalId()) {
+			} else if (doc.getNationalId() == doctor.getNationalId()) {
 				throw new DuplicateInfoException("Bu kimlik no'ya sahip bir doktor zaten mevcut.");
 			}
 		}
