@@ -8,7 +8,6 @@ import java.util.Date;
 
 public class CRS implements Serializable {
 
-	
 	private static final long serialVersionUID = 1L;
 
 	private HashMap<Long, Patient> patients;
@@ -87,9 +86,9 @@ public class CRS implements Serializable {
 	@SuppressWarnings("resource")
 	public void saveTablesToDisk(String filePath) throws IOException {
 		try {
-		ObjectOutputStream writer = new ObjectOutputStream(new FileOutputStream(filePath));
-		writer.writeObject(this);
-		} catch(IOException e) {
+			ObjectOutputStream writer = new ObjectOutputStream(new FileOutputStream(filePath));
+			writer.writeObject(this);
+		} catch (IOException e) {
 			throw new IOException("Veri kaydedilemedi. Dosya yazma hatası.");
 		}
 	}
@@ -97,12 +96,12 @@ public class CRS implements Serializable {
 	@SuppressWarnings("resource")
 	public void loadTablesToDisk(String filePath) throws IOException, ClassNotFoundException {
 		try {
-		ObjectInputStream reader = new ObjectInputStream(new FileInputStream(filePath));
-		CRS loadedCRS = (CRS) reader.readObject();
-		this.patients = loadedCRS.patients;
-		this.rendezvous = loadedCRS.rendezvous;
-		this.hospitals = loadedCRS.hospitals;
-		} catch(IOException e) {
+			ObjectInputStream reader = new ObjectInputStream(new FileInputStream(filePath));
+			CRS loadedCRS = (CRS) reader.readObject();
+			this.patients = loadedCRS.patients;
+			this.rendezvous = loadedCRS.rendezvous;
+			this.hospitals = loadedCRS.hospitals;
+		} catch (IOException e) {
 			throw new IOException("Veri yüklenirken bir sorun oluştu. Dosya okuma hatası.");
 		}
 	}

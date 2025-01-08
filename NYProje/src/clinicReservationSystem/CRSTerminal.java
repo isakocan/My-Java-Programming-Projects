@@ -116,7 +116,7 @@ public class CRSTerminal {
 	private void addSection(Scanner scanner) throws DuplicateInfoException, IDException {
 		System.out.println("Kayıtlı Hastaneler:");
 		for (Hospital h : crs.getHospitals().values()) {
-			System.out.println("\t" + h);
+			System.out.println("\t"+h);
 		}
 		System.out.print("Hangi hastaneye bölüm eklemek istiyorsunuz? (Hastane ID): ");
 		int hospitalId = Integer.parseInt(scanner.nextLine());
@@ -138,7 +138,7 @@ public class CRSTerminal {
 	private void addDoctor(Scanner scanner) throws DuplicateInfoException, IDException {
 		System.out.println("Kayıtlı Hastaneler:");
 		for (Hospital h : crs.getHospitals().values()) {
-			System.out.println("\t" + h);
+			System.out.println("\t"+h);
 			for (Section s : h.listSections()) {
 				System.out.println("\t\t" + s);
 			}
@@ -177,7 +177,7 @@ public class CRSTerminal {
 					synchronized (crs) {
 						System.out.println("Kayıtlı Hastalar:");
 						for (Patient p : crs.getPatients().values()) {
-							System.out.println("\t" + p);
+							System.out.println("\t"+p);
 						}
 						System.out.print("Hangi hasta için randevu oluşturmak istiyorsunuz? (Hasta ID): ");
 						long patientID = Long.parseLong(scanner.nextLine());
@@ -187,7 +187,7 @@ public class CRSTerminal {
 						}
 						System.out.println("Kayıtlı Hastaneler:");
 						for (Hospital h : crs.getHospitals().values()) {
-							System.out.println("\t" + h);
+							System.out.println("\t"+h);
 						}
 						System.out.print("Hangi hastaneye randevu oluşturmak istiyorsunuz? (Hastane ID): ");
 						int hospitalID = Integer.parseInt(scanner.nextLine());
@@ -197,7 +197,7 @@ public class CRSTerminal {
 						}
 						System.out.println("Kayıtlı Bölümler:");
 						for (Section s : hospital.listSections()) {
-							System.out.println("\t\t" + s);
+							System.out.println("\t" + s);
 						}
 						System.out.print("Hangi bölüme randevu oluşturmak istiyorsunuz? (Bölüm ID): ");
 						int sectionID = Integer.parseInt(scanner.nextLine());
@@ -207,7 +207,7 @@ public class CRSTerminal {
 						}
 						System.out.println("Kayıtlı Doktorlar:");
 						for (Doctor d : section.listDoctors()) {
-							System.out.println("\t\t\t" + d);
+							System.out.println("\t" + d);
 						}
 						System.out.print("Hangi doktora randevu oluşturmak istiyorsunuz? (Doktor Diploma ID): ");
 						int diplomaID = Integer.parseInt(scanner.nextLine());
@@ -237,70 +237,57 @@ public class CRSTerminal {
 		thread.join();
 	}
 
-	public void printSystemInfo() throws InterruptedException {
-		// THREAD CREATION
-		Thread thread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					synchronized (crs) {
-						System.out.println("\nHastalar:");
-						for (Patient p : crs.getPatients().values()) {
-							System.out.println("\t" + p);
-						}
-						System.out.println("\nHastaneler:");
-						for (Hospital hospital : crs.getHospitals().values()) {
-							System.out.println("\t" + hospital);
-							for (Section section : hospital.listSections()) {
-								System.out.println("\t\t" + section);
-								for (Doctor doctor : section.listDoctors()) {
-									System.out.println("\t\t\t" + doctor);
-								}
-							}
-						}
-						System.out.println("\nRandevular:");
-						SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-						for (Rendezvous rendezvous : crs.getRendezvous()) {
-							Date date = rendezvous.getDateTime();
-							String formattedDate = dateFormat.format(date);
-							Doctor doctor = rendezvous.getDoctor();
-							Hospital hospital = null;
-							Section section = null;
+	public void printSystemInfo() {
 
-							boolean found = false;
-							Iterator<Hospital> hospitalIterator = crs.getHospitals().values().iterator();
-							while (hospitalIterator.hasNext() && !found) {
-								Hospital h = hospitalIterator.next();
-								Iterator<Section> sectionIterator = h.listSections().iterator();
-								while (sectionIterator.hasNext() && !found) {
-									Section s = sectionIterator.next();
-									if (s.getDoctor(doctor.getDiplomaId()) != null) {
-										hospital = h;
-										section = s;
-										found = true;
-									}
-								}
-							}
-							System.out.println("\tRandevu tarihi: " + formattedDate + ", \thasta adı: "
-									+ rendezvous.getPatient().getName() + ", \tdoktor adı: " + doctor.getName()
-									+ ", \thastane adı: " + hospital.getName() + ", \tbölüm adı: " + section.getName());
-						}
-					}
-				} catch (Exception e) {
-					System.err.println("Hata: Bilinmeyen bir hata oluştu. Tekrar deneyin.");
+		System.out.println("\nHastalar:");
+		for (Patient p : crs.getPatients().values()) {
+			System.out.println(p);
+		}
+		System.out.println("\nHastaneler:");
+		for (Hospital hospital : crs.getHospitals().values()) {
+			System.out.println(hospital);
+			for (Section section : hospital.listSections()) {
+				System.out.println("\t" + section);
+				for (Doctor doctor : section.listDoctors()) {
+					System.out.println("\t\t" + doctor);
 				}
 			}
-		});
-		// THREAD CREATION
-		thread.start();
-		thread.join();
+		}
+		System.out.println("\nRandevular:");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+		for (Rendezvous rendezvous : crs.getRendezvous()) {
+			Date date = rendezvous.getDateTime();
+			String formattedDate = dateFormat.format(date);
+			Doctor doctor = rendezvous.getDoctor();
+			Hospital hospital = null;
+			Section section = null;
+
+			boolean found = false;
+			Iterator<Hospital> hospitalIterator = crs.getHospitals().values().iterator();
+			while (hospitalIterator.hasNext() && !found) {
+				Hospital h = hospitalIterator.next();
+				Iterator<Section> sectionIterator = h.listSections().iterator();
+				while (sectionIterator.hasNext() && !found) {
+					Section s = sectionIterator.next();
+					if (s.getDoctor(doctor.getDiplomaId()) != null) {
+						hospital = h;
+						section = s;
+						found = true;
+					}
+				}
+			}
+			System.out.println("Randevu tarihi: " + formattedDate + ",  hasta adı: "
+					+ rendezvous.getPatient().getName() + ",  doktor adı: " + doctor.getName() + ",  hastane adı: "
+					+ hospital.getName() + ",  bölüm adı: " + section.getName());
+		}
+
 	}
 
 	private void saveTablesToDisk(Scanner scanner) throws IOException {
 		System.out.print("Kaydedilecek dosya adını giriniz. (varsayılan için enter): ");
 		String filePathInput = scanner.nextLine();
 		if (filePathInput.isEmpty()) {
-			filePath = "clinic_data.ser";
+			filePath = "clinic-data.ser";
 		} else {
 			filePath = filePathInput;
 		}
@@ -313,7 +300,7 @@ public class CRSTerminal {
 		System.out.print("Yüklenecek dosyanın adını giriniz.(varsayılan için enter) ");
 		String filePathInput = scanner.nextLine();
 		if (filePathInput.isEmpty()) {
-			filePath = "clinic_data.ser";
+			filePath = "clinic-data.ser";
 		} else {
 			filePath = filePathInput;
 		}

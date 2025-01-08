@@ -31,7 +31,7 @@ public class CRSGUI {
 		this.crs = new CRS();
 		createAndShowGUI();
 	}
-	
+
 	private void loadData(String filePath) {
 		try {
 			crs.loadTablesToDisk(filePath);
@@ -631,68 +631,53 @@ public class CRSGUI {
 		systemInfoTextArea.setFont(labelFont);
 		JScrollPane systemInfoScrollPane = new JScrollPane(systemInfoTextArea);
 
-		Thread thread = new Thread(new Runnable() { // THREAD CREATION
+		StringBuilder sb = new StringBuilder();
+		sb.append("\nHastalar:\n");
+		for (Patient p : crs.getPatients().values()) {
+			sb.append(p).append("\n");
+		}
 
-			@Override
-			public void run() {
-
-				try {
-					synchronized (crs) {
-						StringBuilder sb = new StringBuilder();
-						sb.append("\nHastalar:\n");
-						for (Patient p : crs.getPatients().values()) {
-							sb.append("\t").append(p).append("\n");
-						}
-
-						sb.append("\nHastaneler:\n");
-						for (Hospital hospital : crs.getHospitals().values()) {
-							sb.append("\t").append(hospital).append("\n");
-							for (Section section : hospital.listSections()) {
-								sb.append("\t\t").append(section).append("\n");
-								for (Doctor doctor : section.listDoctors()) {
-									sb.append("\t\t\t").append(doctor).append("\n");
-								}
-							}
-						}
-						sb.append("\nRandevular:\n");
-						SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-						for (Rendezvous rendezvous : crs.getRendezvous()) {
-							Date date = rendezvous.getDateTime();
-							String formattedDate = dateFormat.format(date);
-							Doctor doctor = rendezvous.getDoctor();
-							Hospital hospital = null;
-							Section section = null;
-
-							boolean found = false;
-							Iterator<Hospital> hospitalIterator = crs.getHospitals().values().iterator();
-							while (hospitalIterator.hasNext() && !found) {
-								Hospital h = hospitalIterator.next();
-								Iterator<Section> sectionIterator = h.listSections().iterator();
-								while (sectionIterator.hasNext() && !found) {
-									Section s = sectionIterator.next();
-									if (s.getDoctor(doctor.getDiplomaId()) != null) {
-										hospital = h;
-										section = s;
-										found = true;
-									}
-								}
-							}
-
-							sb.append("\tRandevu tarihi: ").append(formattedDate).append(",  hasta adı: ")
-									.append(rendezvous.getPatient().getName()).append(",\t doktor adı: ")
-									.append(doctor.getName()).append(",\t   hastane adı: ").append(hospital.getName())
-									.append(",\t bölüm adı: ")
-									.append(section != null ? section.getName() : "Bölüm bilgisi bulunamadı")
-									.append("\n");
-						}
-						systemInfoTextArea.setText(sb.toString());
-					}
-				} catch (Exception e) {
-					resultArea.append("Hata : Bilinmeyen bir hata oluştu. Tekrar deneyin.\n");
+		sb.append("\nHastaneler:");
+		for (Hospital hospital : crs.getHospitals().values()) {
+			sb.append("\n").append(hospital).append("\n");
+			for (Section section : hospital.listSections()) {
+				sb.append("\t").append(section).append("\n");
+				for (Doctor doctor : section.listDoctors()) {
+					sb.append("\t\t").append(doctor).append("\n");
 				}
 			}
-		}); // THREAD CREATION
-		thread.start();
+		}
+		sb.append("\n\nRandevular:\n");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+		for (Rendezvous rendezvous : crs.getRendezvous()) {
+			Date date = rendezvous.getDateTime();
+			String formattedDate = dateFormat.format(date);
+			Doctor doctor = rendezvous.getDoctor();
+			Hospital hospital = null;
+			Section section = null;
+
+			boolean found = false;
+			Iterator<Hospital> hospitalIterator = crs.getHospitals().values().iterator();
+			while (hospitalIterator.hasNext() && !found) {
+				Hospital h = hospitalIterator.next();
+				Iterator<Section> sectionIterator = h.listSections().iterator();
+				while (sectionIterator.hasNext() && !found) {
+					Section s = sectionIterator.next();
+					if (s.getDoctor(doctor.getDiplomaId()) != null) {
+						hospital = h;
+						section = s;
+						found = true;
+					}
+				}
+			}
+
+			sb.append("Randevu tarihi: ").append(formattedDate).append(",  hasta adı: ")
+					.append(rendezvous.getPatient().getName()).append(",  doktor adı: ").append(doctor.getName())
+					.append(",  hastane adı: ").append(hospital.getName()).append(",  bölüm adı: ")
+					.append(section != null ? section.getName() : "Bölüm bilgisi bulunamadı").append("\n");
+		}
+		systemInfoTextArea.setText(sb.toString());
+
 		backButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
