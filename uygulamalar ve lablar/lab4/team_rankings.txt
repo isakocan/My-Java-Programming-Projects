@@ -1,0 +1,5 @@
+1. TeamE: 169
+2. TeamD: 163
+3. TeamC: 158
+4. TeamA: 157
+5. TeamB: 146
